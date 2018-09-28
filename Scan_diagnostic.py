@@ -58,7 +58,7 @@ for fname in run_ana.fnames:
     
     
     """ Get bin index """
-    key = config.detectors['I0'].Id
+    key = config.detI0.Id
 #    eventIds = data[key].eventIds #this step takes a surprise amount of time... smth is probably wrong with the JF files
     eventIds = ana.get_JFeventIds_dirty(dstores, key, step_size = 4)
     last_idx_step = np.cumsum(data[key].stepLengths)
@@ -102,11 +102,11 @@ for fname in run_ana.fnames:
 
         """ Analyze I0 detector """
         if useI0:
-            det = config.detectors['I0']
+            det = config.detI0
             I0dat = ana.JFdata(data[det.Id].data[idx_bin], det)
             I0dat.filtered = I0dat.apply_filter(hist_range=hist_range)
             I0 = I0dat.run_ana()
-            I0 = np.r_[compute(*I0)]
+            I0 = np.r_[compute(*compute(*I0))]
             
             """ Plot detector """
             imgI0 = ana.sum_delayedImgs(I0dat.filtered)
@@ -153,7 +153,7 @@ for fname in run_ana.fnames:
                 
                 """ Analyze detector """                
                 ana_out = JFdata[det.name].run_ana()
-                res = np.r_[compute(*ana_out)]
+                res = np.r_[compute(*compute(*ana_out))]
                 results[det.name] = {'laser_on': res[laser_on], 'laser_off': res[laser_off]}
                 
                 """ Plot detector """
@@ -164,7 +164,7 @@ for fname in run_ana.fnames:
                 plt.imshow(imgDet, origin='lower', clim=(0,5000))
                 
                 plt.subplot2grid((2,2),(0,1))
-                plt.title('Histograms')
+                plt.title('Pixel histograms')
                 hist, bins = ana.getHist(JFdata[det.name].CMcorr[0].compute(), bins=hist_range)
                 plt.semilogy(bins[:-1],hist)
                 hist, bins = ana.getHist(JFdata[det.name].filtered[0].compute(), bins=hist_range)

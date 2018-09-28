@@ -184,8 +184,12 @@ class detector:
 
 """ ------------------------- JungFrau CLASS ------------------------- """
 class JFdata:
-    def __init__(self, raw, detector=None, roi = None):
-        self.raw = raw
+    def __init__(self, raw, detector=None, roi=None):
+        if roi != None:
+            self.raw = self.apply_roi(raw, roi=roi)
+        else:
+            self.raw = raw
+        
         if (not detector is None):
             self.detector = detector
             self.corrected = self.apply_gain_pede_np(detector.gains, detector.pedestals, pixel_mask = detector.pixel_mask)
@@ -242,15 +246,15 @@ class JFdata:
                     delay in self.CMcorr]
     
 
-    def roi(self, coord=None):
-        coord=np.array(coord)
-        self.corrected = self.corrected[:,coord[0,0]:coord[0,1],coord[1,0]:coord[1,1]]
+    def apply_roi(imgs, roi=None):
+        roi=np.array(roi)
+        return imgs[:,roi[0,0]:roi[0,1],roi[1,0]:roi[1,1]]
 #        self.gains = self.gains[:][coord[0,0]:coord[0,1],coord[1,0]:coord[1,1]]
 #        self.pedestals = self.pedestals[:][coord[0,0]:coord[0,1],coord[1,0]:coord[1,1]]
 
 
     def run_ana(self):
-        if self.detector.ana_fun:
+        if self.detector.ana_fun.compute():
             ana_fun = self.detector.ana_fun
             if self.detector.ana_args:
                 ana_args = self.detector.ana_args
@@ -434,7 +438,7 @@ def correct_stripeJF(imgin):
 
 @delayed
 def fluo_ana(imgs_in, roi=None):
-    """ Analyze fluo JF detector (redundant with roi_integrate somehow)"""
+    """ Analyze fluo JF detector (redundant with roi_integrate somehow) """
     if roi is None:
         img_size = imgs_in.shape
         if len(img_size)==2:
@@ -481,15 +485,12 @@ def roi_bkgRoi(image_in, roi, bkg_roi):
         intersect = []
 
     temp_roi = intersect
-#    return temp_roi
-
+    
     if len(image_in.shape) == 2:
         img_roi = image_in[roi[0][0]:roi[0][1], roi[1][0]:roi[1][1]]
         img_bkg_roi = image_in[bkg_roi[0][0]:bkg_roi[0][1], bkg_roi[1][0]:bkg_roi[1][1]]
         if fintersect:
             img_temp_roi = image_in[temp_roi[0][0]:temp_roi[0][1], temp_roi[1][0]:temp_roi[1][1]]
-        
-    #    return img_roi
     
         size_roi = img_roi.shape[0] * img_roi.shape[1]
         size_bkg_roi = img_bkg_roi.shape[0] * img_bkg_roi.shape[1]
@@ -533,7 +534,7 @@ def roi_bkgRoi(image_in, roi, bkg_roi):
         
     else: print('Image format no valid')
 
-    return intensity, bkg
+    return np.transpose(np.asarray([intensity, bkg]))
 
 
 

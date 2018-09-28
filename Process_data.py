@@ -67,9 +67,10 @@ for fname in run_ana.fnames:
     
     
     """ Get bin index """
-    key = config.detectors['I0'].Id
-#    eventIds = data[key].eventIds #this step takes a surprise amount of time... smth is probably wrong with the JF files
-    eventIds = ana.get_JFeventIds_dirty(dstores, key, step_size = 4)
+    key = config.detI0.Id
+#    eventIds = data[key].eventIds #this step takes a surprise amount of time... 
+        #It is due to the way the eventIds are written in the memory. THere is nothing we can do about it here.
+    eventIds = ana.get_JFeventIds_dirty(dstores, key, step_size=4)
     last_idx_step = np.cumsum(data[key].stepLengths)
     motor_pos_tot = np.zeros(eventIds.shape)
     for ii in range(len(last_idx_step)):
@@ -129,9 +130,9 @@ for fname in run_ana.fnames:
 
             """ Analyze I0 detector """
             if useI0:
-                det = config.detectors['I0']
+                det = config.detI0
                 I0dat = ana.JFdata(data[det.Id].data[idx_bin], det)
-                I0dat.filtered = I0dat.apply_filter(hist_range=hist_range)
+#                I0dat.filtered = I0dat.apply_filter(hist_range=hist_range)
 
                 I0 = I0dat.run_ana()
                 I0 = np.r_[compute(*I0)]
@@ -158,7 +159,7 @@ for fname in run_ana.fnames:
                 
                 """ Analyze detector """                
                 ana_out = JFdata[det.name].run_ana()
-                res = np.r_[compute(*ana_out)]
+                res = np.r_[compute(*compute(*ana_out))]
                 results[det.name] = {'laser_on': res[laser_on], 'laser_off': res[laser_off]}
             
             
