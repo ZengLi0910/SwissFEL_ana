@@ -46,7 +46,7 @@ All of this is applied in a lazy way, meaning that none of the computation are a
 Before the common mode correction, the images are in a dask.array.Array format, which is convenient to perform array operation. However, the common mode correction script does not work with dask array, and from then on it is converted into a series of delayed objects. See dask documentation for more information.
 
 Other functions:
-The some pretty self-explanatory functions that are mainly used by the different classes above. Some analysis function are there too, such as roi_bkgRoi, which will take a region of interest and a background from an image.
+These are some pretty self-explanatory functions that are mainly used by the different classes above. Some analysis function are there too, such as roi_bkgRoi, which will take a region of interest and a background from an image.
 
 These functions and class are then used into the two front-end scripts: Process_data.py and Scan_diagnostic.py.
 Those two files are very similar: while one run the full analysis and saves each processed step in a separate hdf5 file, the second one analysis only a given step and provides diagnostics. Typically the second script is run first to check that the parameters (filters, roi, …) are correct. The analysis is then performed by running Process_data.py.
