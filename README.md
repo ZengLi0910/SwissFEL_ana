@@ -11,10 +11,15 @@ To setup environment for data analysis type:
 source /sf/bernina/bin/anaconda_env
 
 Scripts files:
+
 config.py
+
 Process_data.py
+
 Scan_diagnostic.py
+
 sf_ana_tools.py
+
 additional customs analysis function depending on the experiment
 
 In sf_ana_tools.py, all the main functions are provided.
